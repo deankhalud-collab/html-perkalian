@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Perkalian Modern</title>
+  <style>
+    /* ========================
+       RESET & BASE STYLES
+    ========================= */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    :root {
+      --bg: #f9f9f9;
+      --card: #ffffff;
+      --text: #222;
+      --accent: #4e8cff;
+      --accent-dark: #3a6cd9;
+      --danger: #ff4d4d;
+      --success: #28c76f;
+    }
+
+    body.dark {
+      --bg: #1a1a1a;
+      --card: #2a2a2a;
+      --text: #f1f1f1;
+      --accent: #4e8cff;
+      --accent-dark: #3a6cd9;
+      --danger: #ff6666;
+      --success: #2ecc71;
+    }
+
+    /* ========================
+       CONTAINER
+    ========================= */
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card);
+      padding: 20px 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: var(--accent);
+    }
+
+    .mode-toggle {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+    .mode-toggle button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .mode-toggle button:hover {
+      background: var(--accent-dark);
+    }
+
+    /* ========================
+       START SCREEN
+    ========================= */
+    .start-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .multiplication-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .grid-btn {
+      padding: 15px;
+      border: 2px solid var(--accent);
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+    .grid-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .timer-options {
+      margin: 15px 0;
+      text-align: center;
+    }
+    .timer-options select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .start-btn {
+      background: var(--accent);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .start-btn:hover {
+      background: var(--accent-dark);
+    }
+
+    /* ========================
+       QUIZ SCREEN
+    ========================= */
+    .quiz-screen {
+      display: none;
+    }
+    .question-box {
+      margin: 20px 0;
+      padding: 20px;
+      border: 2px dashed var(--accent);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .option-btn {
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid var(--accent);
+      background: transparent;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+    .option-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .option-btn.correct {
+      border-color: var(--success);
+      background: var(--success);
+      color: white;
+    }
+    .option-btn.wrong {
+      border-color: var(--danger);
+      background: var(--danger);
+      color: white;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+
+    /* ========================
+       RESULT SCREEN
+    ========================= */
+    .result-screen {
+      display: none;
+      text-align: center;
+    }
+    .result-screen h2 {
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+    .score {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+    .review {
+      text-align: left;
+      margin-top: 20px;
+    }
+    .review-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-bottom: 1px solid var(--accent);
+    }
+    .review-item.correct {
+      color: var(--success);
+    }
+    .review-item.wrong {
+      color: var(--danger);
+    }
+
+    .leaderboard {
+      margin-top: 20px;
+    }
+    .leaderboard h3 {
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+    }
+    .leaderboard li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="mode-toggle">
+      <button id="toggleMode">🌙/☀️</button>
+    </div>
+    <h1>Kuis Perkalian</h1>
+
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+      <p>Pilih tabel perkalian yang ingin dipelajari:</p>
+      <div class="multiplication-grid" id="grid"></div>
+
+      <div class="timer-options">
+        <label for="timerSelect">Mode waktu: </label>
+        <select id="timerSelect">
+          <option value="none">Tanpa Batas</option>
+          <option value="30">30 Detik</option>
+          <option value="60">60 Detik</option>
+        </select>
+      </div>
+
+      <button class="start-btn" id="startBtn">Mulai Kuis</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div class="quiz-screen" id="quizScreen">
+      <div class="status-bar">
+        <span id="questionCount">Soal: 0/0</span>
+        <span id="timer">⏳</span>
+      </div>
+      <div class="question-box" id="questionBox"></div>
+      <div class="options" id="options"></div>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="result-screen" id="resultScreen">
+      <h2>Hasil Kuis</h2>
+      <p class="score" id="score"></p>
+      <button class="start-btn" onclick="restartQuiz()">Ulangi</button>
+      <div class="review" id="review"></div>
+
+      <div class="leaderboard">
+        <h3>🏆 Leaderboard</h3>
+        <ul id="leaderboardList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suara -->
+  <audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c48e4d7f26.mp3?filename=correct-2-46134.mp3"></audio>
+  <audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f8c87e0eb8.mp3?filename=wrong-answer-129254.mp3"></audio>
+
+  <script>
+    // ================================
+    // VARIABEL GLOBAL
+    // ================================
+    const grid = document.getElementById("grid");
+    const startBtn = document.getElementById("startBtn");
+    const startScreen = document.getElementById("startScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
+    const questionBox = document.getElementById("questionBox");
+    const options = document.getElementById("options");
+    const questionCount = document.getElementById("questionCount");
+    const scoreEl = document.getElementById("score");
+    const reviewEl = document.getElementById("review");
+    const leaderboardList = document.getElementById("leaderboardList");
+    const timerEl = document.getElementById("timer");
+    const timerSelect = document.getElementById("timerSelect");
+
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+
+    let selectedTable = 1;
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft;
+    let userAnswers = [];
+
+    // ================================
+    // BUAT TOMBOL GRID 1-10
+    // ================================
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement("button");
+      btn.classList.add("grid-btn");
+      btn.textContent = `x${i}`;
+      btn.onclick = () => {
+        selectedTable = i;
+        document.querySelectorAll(".grid-btn").forEach(b=>b.style.background="transparent");
+        btn.style.background = "var(--accent)";
+        btn.style.color = "white";
+      };
+      if (i===1) {
+        btn.style.background = "var(--accent)";
+        btn.style.color = "white";
+      }
+      grid.appendChild(btn);
+    }
+
+    // ================================
+    // MULAI KUIS
+    // ================================
+    startBtn.onclick = () => {
+      startScreen.style.display = "none";
+      quizScreen.style.display = "block";
+      generateQuestions();
+      startQuiz();
+    };
+
+    function generateQuestions() {
+      questions = [];
+      for (let i = 1; i <= 10; i++) {
+        const correct = selectedTable * i;
+        let opts = [correct];
+        while (opts.length < 4) {
+          let rand = Math.floor(Math.random() * 100) + 1;
+          if (!opts.includes(rand)) opts.push(rand);
+        }
+        opts = opts.sort(()=>Math.random()-0.5);
+        questions.push({q: `${selectedTable} × ${i} = ?`, correct, options: opts});
+      }
+      questions = questions.sort(()=>Math.random()-0.5);
+    }
+
+    function startQuiz() {
+      currentIndex = 0;
+      score = 0;
+      userAnswers = [];
+      showQuestion();
+      // Timer
+      const mode = timerSelect.value;
+      if (mode !== "none") {
+        timeLeft = parseInt(mode);
+        timerEl.textContent = `⏳ ${timeLeft}s`;
+        timer = setInterval(()=>{
+          timeLeft--;
+          timerEl.textContent = `⏳ ${timeLeft}s`;
+          if (timeLeft<=0) {
+            clearInterval(timer);
+            endQuiz();
+          }
+        },1000);
+      } else {
+        timerEl.textContent = "∞";
+      }
+    }
+
+    function showQuestion() {
+      if (currentIndex>=questions.length) {
+        endQuiz();
+        return;
+      }
+      const q = questions[currentIndex];
+      questionBox.textContent = q.q;
+      options.innerHTML = "";
+      q.options.forEach(opt=>{
+        const btn = document.createElement("button");
+        btn.classList.add("option-btn");
+        btn.textContent = opt;
+        btn.onclick = ()=>checkAnswer(btn,opt,q.correct);
+        options.appendChild(btn);
+      });
+      questionCount.textContent = `Soal: ${currentIndex+1}/${questions.length}`;
+    }
+
+    function checkAnswer(btn,opt,correct) {
+      const allBtns = document.querySelectorAll(".option-btn");
+      allBtns.forEach(b=>b.disabled=true);
+      if (opt===correct) {
+        btn.classList.add("correct");
+        correctSound.play();
+        score++;
+        userAnswers.push({q:questions[currentIndex].q, ans:opt, correct:true});
+      } else {
+        btn.classList.add("wrong");
+        wrongSound.play();
+        userAnswers.push({q:questions[currentIndex].q, ans:opt, correct:false, correctAns:correct});
+      }
+      setTimeout(()=>{
+        currentIndex++;
+        showQuestion();
+      },1000);
+    }
+
+    function endQuiz() {
+      clearInterval(timer);
+      quizScreen.style.display = "none";
+      resultScreen.style.display = "block";
+      scoreEl.textContent = `Skor kamu: ${score}/${questions.length}`;
+      // Review
+      reviewEl.innerHTML = "<h3>Review Jawaban:</h3>";
+      userAnswers.forEach(item=>{
+        const div = document.createElement("div");
+        div.classList.add("review-item");
+        div.classList.add(item.correct ? "correct" : "wrong");
+        div.textContent = item.correct ? `${item.q} ✔ (${item.ans})` : `${item.q} ✖ Jawab: ${item.ans}, Benar: ${item.correctAns}`;
+        reviewEl.appendChild(div);
+      });
+      saveLeaderboard(score);
+      renderLeaderboard();
+    }
+
+    function restartQuiz() {
+      resultScreen.style.display = "none";
+      startScreen.style.display = "block";
+    }
+
+    // ================================
+    // LEADERBOARD
+    // ================================
+    function saveLeaderboard(score) {
+      let lb = JSON.parse(localStorage.getItem("leaderboard")||"[]");
+      lb.push({table:selectedTable,score,date:new Date().toLocaleString()});
+      lb = lb.slice(-5);
+      localStorage.setItem("leaderboard",JSON.stringify(lb));
+    }
+    function renderLeaderboard() {
+      leaderboardList.innerHTML="";
+      let lb = JSON.parse(localStorage.getItem("leaderboard")||"[]");
+      lb.forEach(item=>{
+        const li = document.createElement("li");
+        li.textContent = `${item.date} - Tabel x${item.table} : ${item.score}/10`;
+        leaderboardList.appendChild(li);
+      });
+    }
+
+    // ================================
+    // MODE TERANG/GELAP
+    // ================================
+    const toggleMode = document.getElementById("toggleMode");
+    toggleMode.onclick = ()=>{
+      document.body.classList.toggle("dark");
+    };
+  </script>
+</body>
+</html>
